@@ -345,13 +345,18 @@ uint32_t PubSubClient::readPacket(uint8_t* lengthLength) {
         }
     }
     uint32_t idx = len;
-
+    
+    delay(5); // Feed the watchdog
     for (uint32_t i = start;i<length;i++) {
         if(!readByte(&digit)) return 0;
         if (this->stream) {
             if (isPublish && idx-*lengthLength-2>skip) {
                 this->stream->write(digit);
             }
+        }
+
+        if (i % 100 == 0) {
+            delay(5); // Feed the watchdog
         }
 
         if (len < this->bufferSize) {
